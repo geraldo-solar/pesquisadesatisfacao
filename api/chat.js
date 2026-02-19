@@ -39,7 +39,7 @@ export default async function handler(request, response) {
     Dados das Avaliações (JSON):
     ${context}`;
 
-        const apiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+        const openAiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -56,9 +56,9 @@ export default async function handler(request, response) {
             })
         });
 
-        const data = await apiResponse.json();
+        const data = await openAiResponse.json();
 
-        if (!apiResponse.ok) {
+        if (!openAiResponse.ok) {
             throw new Error(data.error?.message || 'Failed to fetch from OpenAI');
         }
 

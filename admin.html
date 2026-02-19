@@ -126,7 +126,7 @@
     </style>
 </head>
 
-<body>
+<body class="locked">
     <div class="container">
         <header class="admin-header">
             <div>
@@ -208,31 +208,45 @@
             }
 
             .ai-highlight {
-                font-weight: 600;
-                color: #4C1D95;
-            }
+                .ai-highlight {
+                    font-weight: 600;
+                    color: #4C1D95;
+                }
         </style>
 
         <!-- AI Insights & Chat Section -->
-        <div id="aiInsights" class="ai-section">
-            <h3><i class="fas fa-robot"></i> Inteligência Artificial & Insights</h3>
-            <div id="aiContent" class="ai-content"></div>
+        <div id="aiInsights" class="ai-section" style="display: none;">
+            <div class="ai-header">
+                <h3><i class="fas fa-robot"></i> Inteligência Artificial</h3>
+                <button onclick="generateAIInsights()" class="close-ai"><i class="fas fa-times"></i></button>
+            </div>
 
-            <div id="chatContainer" class="chat-container">
-                <div id="chatMessages" class="chat-messages">
-                    <!-- Initial welcome message will be added via JS -->
-                    <div class="message ai-message">
-                        Olá! Sou sua assistente virtual. Analisei as avaliações e estou pronta para responder suas
-                        perguntas.
-                        <br><br>
-                        <em>Ex: "Quais são as principais reclamações?" ou "O que elogiam no café da manhã?"</em>
-                    </div>
+            <!-- Date Filter for Analysis -->
+            <div class="ai-filters"
+                style="padding: 1rem; border-bottom: 1px solid #eee; display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+                <div class="filter-group">
+                    <label for="aiStartDate" style="font-size: 0.9rem; color: #666;">De:</label>
+                    <input type="date" id="aiStartDate"
+                        style="padding: 0.5rem; border: 1px solid #ddd; border-radius: 6px;">
                 </div>
-                <div class="chat-input-area">
-                    <input type="text" id="chatInput" placeholder="Pergunte algo sobre as avaliações..."
-                        autocomplete="off">
-                    <button id="sendChatBtn"><i class="fas fa-paper-plane"></i></button>
+                <div class="filter-group">
+                    <label for="aiEndDate" style="font-size: 0.9rem; color: #666;">Até:</label>
+                    <input type="date" id="aiEndDate"
+                        style="padding: 0.5rem; border: 1px solid #ddd; border-radius: 6px;">
                 </div>
+            </div>
+
+            <div id="chatMessages" class="chat-messages">
+                <!-- Messages will appear here -->
+                <div class="message ai-message">
+                    Olá! Sou a IA do Hotel Solar. Posso analisar todas as avaliações para você.
+                    <br><br>
+                    <strong>Sugestão:</strong> Defina um período acima e pergunte "Faça um resumo".
+                </div>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" id="chatInput" placeholder="Ex: Quais são os pontos fortes desta semana?">
+                <button id="sendChatBtn"><i class="fas fa-paper-plane"></i></button>
             </div>
         </div>
 
@@ -373,37 +387,65 @@
     </div>
 
     <style>
+        /* Hide main content when locked */
+        body.locked .container {
+            filter: blur(10px);
+            pointer-events: none;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        /* Enhanced Login UI - Portaria Style Structure, Hotel Solar Colors */
         .login-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: var(--primary-color);
-            /* Brand Green */
+            /* Gradient based on Hotel Solar Primary Color #2F4F2F */
+            background: linear-gradient(135deg, #2F4F2F 0%, #1F3F1F 50%, #1a2e1a 100%);
             display: flex;
+            /* Default: Visible. JS will hide if auth (but in this case, we want forced login) */
             justify-content: center;
             align-items: center;
-            z-index: 1000;
-            backdrop-filter: blur(5px);
+            z-index: 9999;
+            backdrop-filter: none;
         }
 
         .login-box {
             background: white;
             padding: 2.5rem;
-            border-radius: var(--border-radius);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            border-radius: 16px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
             text-align: center;
             width: 90%;
             max-width: 400px;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .login-logo {
             margin-bottom: 1.5rem;
             background-color: var(--primary-color);
+            /* Dark Green for White Logo Contrast */
             padding: 1rem;
-            border-radius: 8px;
-            display: inline-block;
+            border-radius: 12px;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: none;
         }
 
         .login-logo img {
@@ -413,59 +455,74 @@
 
         .login-box h2 {
             color: var(--primary-color);
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.25rem;
+            font-size: 1.5rem;
+            font-weight: 700;
         }
 
         .login-box p {
             color: var(--text-secondary);
-            margin-bottom: 1.5rem;
-            font-size: 0.95rem;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+            font-weight: 500;
         }
 
         .login-box input {
             width: 100%;
-            padding: 0.75rem 1rem;
+            padding: 0.85rem 1rem;
             margin-bottom: 1rem;
-            border: 1px solid var(--border-color);
+            border: 2px solid #e5e7eb;
             border-radius: 8px;
             font-size: 1rem;
             outline: none;
-            transition: border-color 0.2s;
+            transition: all 0.2s;
+            text-align: center;
+            letter-spacing: 0.05em;
         }
 
         .login-box input:focus {
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(47, 79, 47, 0.1);
+            box-shadow: 0 0 0 4px rgba(47, 79, 47, 0.1);
+            /* Primary color with opacity */
+        }
+
+        .login-box input::placeholder {
+            color: #a7f3d0;
         }
 
         .login-box button {
             width: 100%;
-            padding: 0.75rem;
-            background-color: var(--primary-color);
+            padding: 0.85rem;
+            background-color: #059669;
+            /* Emerald 600 */
             color: white;
             border: none;
             border-radius: 8px;
             cursor: pointer;
             font-size: 1rem;
             font-weight: 600;
-            transition: background-color 0.2s;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
         .login-box button:hover {
-            background-color: var(--primary-hover);
+            background-color: #047857;
+            /* Emerald 700 */
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .login-box button:active {
+            transform: translateY(0);
         }
 
         .error-msg {
-            color: #ef4444;
+            color: #dc2626;
             font-size: 0.875rem;
             margin-top: 1rem;
             min-height: 1.25rem;
-        }
-
-        /* Hide main content when locked */
-        body.locked .container {
-            filter: blur(5px);
-            pointer-events: none;
+            font-weight: 500;
         }
     </style>
 

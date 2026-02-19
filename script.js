@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const modal = document.getElementById('successModal');
     const closeModalBtn = document.getElementById('closeModalBtn');
 
-    form.addEventListener('submit', (e) => {
+    form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
         // Gather form data
@@ -85,9 +85,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const average = count > 0 ? (totalScore / count) : 0;
         console.log(`Average Rating: ${average.toFixed(2)}`);
 
-        // Save to LocalStorage (Simulate Database)
-        data.averageRating = average.toFixed(2); // Start saving average too
-        saveToDatabase(data);
+        // Send to API (Supabase)
+        data.averageRating = average.toFixed(2);
+        postToApi(data);
 
         // Log to console (Simulating backend)
         console.group('Avaliação Recebida');
@@ -125,11 +125,30 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Save to LocalStorage
-    function saveToDatabase(data) {
+    // Send to API
+    async function postToApi(data) {
+        try {
+            const response = await fetch('/api/submit_evaluation', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+            const result = await response.json();
+            console.log('%c[API] Saved to Supabase:', 'color: green; font-weight: bold;', result);
+        } catch (error) {
+            console.error('Error saving to API:', error);
+            // Fallback to LocalStorage if API fails (for offline support or config error)
+            saveToLocalStorageFallback(data);
+        }
+    }
+
+    function saveToLocalStorageFallback(data) {
         let evaluations = JSON.parse(localStorage.getItem('hotelSolarEvaluations')) || [];
         evaluations.push(data);
         localStorage.setItem('hotelSolarEvaluations', JSON.stringify(evaluations));
-        console.log('%c[DATABASE] Evaluated saved to localStorage.', 'color: green; font-weight: bold;');
+        console.log('%c[FALLBACK] Saved to localStorage (API Error).', 'color: orange; font-weight: bold;');
     }
 
     // Close Modal Logic

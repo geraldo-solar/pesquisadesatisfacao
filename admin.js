@@ -1,18 +1,21 @@
-document.addEventListener('DOMContentLoaded', () => {
-    checkAuth();
+const INACTIVITY_LIMIT_MS = 10 * 60 * 1000; // 10 minutes
+let inactivityTimer;
 
-    document.getElementById('refreshBtn').addEventListener('click', loadDashboardData);
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('[Admin] Initializing...');
+
+    // Refresh Button
+    const refreshBtn = document.getElementById('refreshBtn');
+    if (refreshBtn) refreshBtn.addEventListener('click', loadDashboardData);
 
     // AI Insights Button
     const aiBtn = document.getElementById('aiBtn');
-    if (aiBtn) {
-        aiBtn.addEventListener('click', generateAIInsights);
-    }
+    if (aiBtn) aiBtn.addEventListener('click', generateAIInsights);
 
+    // Logout Button
     const logoutBtn = document.getElementById('logoutBtn');
     if (logoutBtn) {
         logoutBtn.addEventListener('click', () => {
-            sessionStorage.removeItem('adminAuth');
             window.location.reload();
         });
     }
@@ -22,44 +25,83 @@ document.addEventListener('DOMContentLoaded', () => {
     if (loginForm) {
         loginForm.addEventListener('submit', (e) => {
             e.preventDefault();
+            console.log('[Admin] Login submit...');
             const password = document.getElementById('adminPassword').value;
-            // Password updated as requested
+
             if (password === 'metron82') {
-                sessionStorage.setItem('adminAuth', 'true');
+                console.log('[Admin] Password correct. Authenticating...');
+                // In-memory authentication only - No storage
+                window.isAuthenticated = true;
+
                 document.getElementById('loginOverlay').style.display = 'none';
                 document.body.classList.remove('locked');
+
+                // Force load
                 loadDashboardData();
+                startInactivityTracker();
             } else {
+                console.warn('[Admin] Password incorrect.');
                 document.getElementById('loginError').innerText = 'Senha incorreta.';
             }
         });
     }
 });
 
-function checkAuth() {
-    const isAuth = sessionStorage.getItem('adminAuth') === 'true';
-    if (!isAuth) {
-        document.body.classList.add('locked');
-        document.getElementById('loginOverlay').style.display = 'flex';
-    } else {
-        document.getElementById('loginOverlay').style.display = 'none';
-        loadDashboardData();
-    }
+// Initial State: Always Locked (HTML default)
+
+function startInactivityTracker() {
+    resetInactivityTimer();
+    // Listen for activity
+    window.addEventListener('mousemove', resetInactivityTimer);
+    window.addEventListener('click', resetInactivityTimer);
+    window.addEventListener('keypress', resetInactivityTimer);
+    window.addEventListener('scroll', resetInactivityTimer);
+    window.addEventListener('touchmove', resetInactivityTimer);
 }
 
-function loadDashboardData() {
-    // Only load if authenticated
-    if (sessionStorage.getItem('adminAuth') !== 'true') return;
+function resetInactivityTimer() {
+    clearTimeout(inactivityTimer);
+    inactivityTimer = setTimeout(logoutUser, INACTIVITY_LIMIT_MS);
+}
 
-    // 1. Fetch data from LocalStorage
-    const rawData = localStorage.getItem('hotelSolarEvaluations');
-    const evaluations = rawData ? JSON.parse(rawData) : [];
+function logoutUser() {
+    // Just reload to reset state
+    window.location.reload();
+}
 
-    // 2. Update Basic Stats
-    updateStats(evaluations);
+async function loadDashboardData() {
+    // Only load if authenticated (in-memory)
+    if (!window.isAuthenticated) return;
 
-    // 3. Render List
-    renderFeedbackList(evaluations);
+    try {
+        // 1. Fetch data from Supabase API
+        const response = await fetch('/api/get_evaluations');
+        const result = await response.json();
+
+        let evaluations = [];
+        if (result.success && result.data) {
+            evaluations = result.data;
+        } else {
+            console.error('API Error:', result.error);
+            // Fallback to local storage if API fails or returns error
+            const rawData = localStorage.getItem('hotelSolarEvaluations');
+            evaluations = rawData ? JSON.parse(rawData) : [];
+        }
+
+        // 2. Update Basic Stats
+        updateStats(evaluations);
+
+        // 3. Render List
+        renderFeedbackList(evaluations);
+
+    } catch (error) {
+        console.error('Fetch Error:', error);
+        // Fallback
+        const rawData = localStorage.getItem('hotelSolarEvaluations');
+        const evaluations = rawData ? JSON.parse(rawData) : [];
+        updateStats(evaluations);
+        renderFeedbackList(evaluations);
+    }
 }
 
 function updateStats(evaluations) {
@@ -234,15 +276,85 @@ async function sendMessage() {
     }
 
     try {
-        // 2. Prepare Data
-        const rawData = localStorage.getItem('hotelSolarEvaluations');
-        const evaluations = rawData ? JSON.parse(rawData) : [];
+        // 2. Prepare Data (Filter by Date)
+        // Switch to API source instead of LocalStorage
+        let evaluations = [];
+        try {
+            const apiResponse = await fetch('/api/get_evaluations');
+            const result = await apiResponse.json();
+            if (result.success && result.data) {
+                evaluations = result.data;
+                console.log('[AI Debug] Fetched:', evaluations.length, 'evaluations');
+            } else {
+                throw new Error('API returned no data');
+            }
+        } catch (e) {
+            console.warn('Chat API fetch failed, falling back to local:', e);
+            const rawData = localStorage.getItem('hotelSolarEvaluations');
+            evaluations = rawData ? JSON.parse(rawData) : [];
+        }
+
+        const originalCount = evaluations.length;
+
+        // Date Filtering
+        const startDateInput = document.getElementById('aiStartDate').value;
+        const endDateInput = document.getElementById('aiEndDate').value;
+
+        let dateContext = "todo o período";
+
+        if (startDateInput || endDateInput) {
+            console.log('[AI Debug] Filtering dates. Input:', startDateInput, 'to', endDateInput);
+
+            // Fix: Use generic date parsing to avoid timezone offset issues on "YYYY-MM-DD"
+            // If we use new Date("2026-02-19"), it might be treated as UTC and shift day in local time
+            // Let's create dates using components to ensure local day match
+
+            let start = new Date(0);
+            if (startDateInput) {
+                const [sy, sm, sd] = startDateInput.split('-').map(Number);
+                start = new Date(sy, sm - 1, sd, 0, 0, 0, 0);
+            }
+
+            let end = new Date(); // Now
+            if (endDateInput) {
+                const [ey, em, ed] = endDateInput.split('-').map(Number);
+                end = new Date(ey, em - 1, ed, 23, 59, 59, 999);
+            } else {
+                // If no end date, defaulting to NOW is fine, but let's make sure it covers the whole day
+                end.setHours(23, 59, 59, 999);
+            }
+
+            console.log('[AI Debug] Filter Window:', start, 'to', end);
+
+            evaluations = evaluations.filter(ev => {
+                const evDate = new Date(ev.timestamp);
+                const isMatch = evDate >= start && evDate <= end;
+                // console.log(`[AI Debug] Checking ${ev.id}: ${evDate.toLocaleString()} >= ${start.toLocaleString()} && <= ${end.toLocaleString()} ? ${isMatch}`);
+                return isMatch;
+            });
+
+            dateContext = `o período de ${startDateInput || 'início'} até ${endDateInput || 'hoje'}`;
+            console.log('[AI Debug] Post-filter count:', evaluations.length);
+        }
+
+        if (evaluations.length === 0) {
+            appendMessage(`Não encontrei avaliações para ${dateContext}.`, 'ai');
+            return;
+        }
 
         // 3. Call Vercel API
+        // Enhanced Prompt: Append instructions for SWOT and Employees
+        const enhancedMessage = `${message}\n\n[INSTRUÇÃO DO SISTEMA]: Analise as ${evaluations.length} avaliações filtradas para ${dateContext}. 
+        Sempre inclua explicitamente:
+        1. ✅ Pontos Fortes (Strengths)
+        2. ⚠️ Pontos Fracos (Weaknesses)
+        3. 🏆 Funcionário Destaque: Mencione nomes de funcionários elogiados e conte quantas vezes foram citados. Se ninguém for citado, diga "Nenhum funcionário citado especificamente".
+        `;
+
         const response = await fetch('/api/chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message, evaluations })
+            body: JSON.stringify({ message: enhancedMessage, evaluations })
         });
 
         const data = await response.json();
