@@ -35,13 +35,17 @@
                 <h2>Manteremos a sua identidade restrita à gerência do hotel. <span class="optional">(Opcional)</span>
                 </h2>
                 <div class="input-group">
-                    <div class="input-wrapper">
-                        <label for="name">Como prefere ser chamado?</label>
-                        <input type="text" id="name" name="name" placeholder="Seu nome">
+                    <div class="input-wrapper" style="grid-column: 1 / -1;">
+                        <label for="name">Nome</label>
+                        <input type="text" id="name" name="name" placeholder="Nome completo">
                     </div>
                     <div class="input-wrapper">
-                        <label for="contact">Qual o melhor contato para falarmos com você?</label>
-                        <input type="text" id="contact" name="contact" placeholder="Email ou WhatsApp">
+                        <label for="stay-date">Data da hospedagem</label>
+                        <input type="date" id="stay-date" name="stay-date">
+                    </div>
+                    <div class="input-wrapper">
+                        <label for="room-number">Número do Apto <span class="optional">(se lembrar)</span></label>
+                        <input type="text" id="room-number" name="room-number" placeholder="Ex: 201">
                     </div>
                 </div>
             </section>
