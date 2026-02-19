@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avaliação de Experiência - Hotel Solar</title>
+    <meta name="description" content="Avalie sua estadia e experiência no Hotel Solar e seus restaurantes.">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo-container">
+                <img src="hotel-solar-logo.png" alt="Hotel Solar Logo" class="logo">
+            </div>
+            <h1>Sua Opinião Importa</h1>
+            <p class="subtitle">Ajude-nos a tornar sua próxima estadia ainda mais inesquecível.</p>
+        </header>
+
+        <form id="evaluationForm" class="evaluation-form">
+            <!-- Seção de Identificação (Opcional) -->
+            <section class="form-section">
+                <h2>Queremos conhecer você <span class="optional">(Opcional)</span></h2>
+                <div class="input-group">
+                    <div class="input-wrapper">
+                        <label for="name">Como prefere ser chamado?</label>
+                        <input type="text" id="name" name="name" placeholder="Seu nome">
+                    </div>
+                    <div class="input-wrapper">
+                        <label for="contact">Seu melhor contato</label>
+                        <input type="text" id="contact" name="contact" placeholder="Email ou WhatsApp">
+                    </div>
+                </div>
+            </section>
+
+            <!-- Avaliação da Hospedagem -->
+            <section class="form-section">
+                <h2>Como foi sua estadia?</h2>
+                <div class="rating-group">
+                    <label>A limpeza estava impecável?</label>
+                    <div class="stars" data-category="hotel-cleanliness">
+                        <i class="far fa-star" data-value="1"></i>
+                        <i class="far fa-star" data-value="2"></i>
+                        <i class="far fa-star" data-value="3"></i>
+                        <i class="far fa-star" data-value="4"></i>
+                        <i class="far fa-star" data-value="5"></i>
+                        <input type="hidden" name="hotel-cleanliness" value="0">
+                    </div>
+                </div>
+                <div class="rating-group">
+                    <label>Sentiu-se confortável?</label>
+                    <div class="stars" data-category="hotel-comfort">
+                        <i class="far fa-star" data-value="1"></i>
+                        <i class="far fa-star" data-value="2"></i>
+                        <i class="far fa-star" data-value="3"></i>
+                        <i class="far fa-star" data-value="4"></i>
+                        <i class="far fa-star" data-value="5"></i>
+                        <input type="hidden" name="hotel-comfort" value="0">
+                    </div>
+                </div>
+                <div class="rating-group">
+                    <label>Nossa equipe cuidou bem de você?</label>
+                    <div class="stars" data-category="hotel-service">
+                        <i class="far fa-star" data-value="1"></i>
+                        <i class="far fa-star" data-value="2"></i>
+                        <i class="far fa-star" data-value="3"></i>
+                        <i class="far fa-star" data-value="4"></i>
+                        <i class="far fa-star" data-value="5"></i>
+                        <input type="hidden" name="hotel-service" value="0">
+                    </div>
+                </div>
+            </section>
+
+            <!-- Restaurante Interno -->
+            <section class="form-section">
+                <h2>Café da Manhã & Restaurante Interno</h2>
+                <div class="rating-group">
+                    <label>A comida estava saborosa?</label>
+                    <div class="stars" data-category="internal-food">
+                        <i class="far fa-star" data-value="1"></i>
+                        <i class="far fa-star" data-value="2"></i>
+                        <i class="far fa-star" data-value="3"></i>
+                        <i class="far fa-star" data-value="4"></i>
+                        <i class="far fa-star" data-value="5"></i>
+                        <input type="hidden" name="internal-food" value="0">
+                    </div>
+                </div>
+                <div class="rating-group">
+                    <label>O atendimento foi atencioso?</label>
+                    <div class="stars" data-category="internal-service">
+                        <i class="far fa-star" data-value="1"></i>
+                        <i class="far fa-star" data-value="2"></i>
+                        <i class="far fa-star" data-value="3"></i>
+                        <i class="far fa-star" data-value="4"></i>
+                        <i class="far fa-star" data-value="5"></i>
+                        <input type="hidden" name="internal-service" value="0">
+                    </div>
+                </div>
+                <div class="rating-group">
+                    <label>O ambiente estava agradável?</label>
+                    <div class="stars" data-category="internal-ambiance">
+                        <i class="far fa-star" data-value="1"></i>
+                        <i class="far fa-star" data-value="2"></i>
+                        <i class="far fa-star" data-value="3"></i>
+                        <i class="far fa-star" data-value="4"></i>
+                        <i class="far fa-star" data-value="5"></i>
+                        <input type="hidden" name="internal-ambiance" value="0">
+                    </div>
+                </div>
+            </section>
+
+            <!-- Reserva Solar (Praia) -->
+            <section class="form-section">
+                <h2>Reserva Solar (Praia)</h2>
+                <div class="rating-group">
+                    <label>Gostou dos petiscos e bebidas?</label>
+                    <div class="stars" data-category="beach-food">
+                        <i class="far fa-star" data-value="1"></i>
+                        <i class="far fa-star" data-value="2"></i>
+                        <i class="far fa-star" data-value="3"></i>
+                        <i class="far fa-star" data-value="4"></i>
+                        <i class="far fa-star" data-value="5"></i>
+                        <input type="hidden" name="beach-food" value="0">
+                    </div>
+                </div>
+                <div class="rating-group">
+                    <label>Como foi o atendimento na praia?</label>
+                    <div class="stars" data-category="beach-service">
+                        <i class="far fa-star" data-value="1"></i>
+                        <i class="far fa-star" data-value="2"></i>
+                        <i class="far fa-star" data-value="3"></i>
+                        <i class="far fa-star" data-value="4"></i>
+                        <i class="far fa-star" data-value="5"></i>
+                        <input type="hidden" name="beach-service" value="0">
+                    </div>
+                </div>
+                <div class="rating-group">
+                    <label>A estrutura atendeu suas necessidades?</label>
+                    <div class="stars" data-category="beach-ambiance">
+                        <i class="far fa-star" data-value="1"></i>
+                        <i class="far fa-star" data-value="2"></i>
+                        <i class="far fa-star" data-value="3"></i>
+                        <i class="far fa-star" data-value="4"></i>
+                        <i class="far fa-star" data-value="5"></i>
+                        <input type="hidden" name="beach-ambiance" value="0">
+                    </div>
+                </div>
+            </section>
+
+            <!-- Comentários Adicionais -->
+            <section class="form-section">
+                <h2>Algo mais a dizer?</h2>
+                <p style="color: #666; font-size: 0.95rem; margin-bottom: 1rem; margin-top: -0.5rem;">
+                    Teve algum funcionário que fez a diferença? Cite o nome dele(a) aqui para que possamos reconhecê-lo!
+                </p>
+                <div class="input-wrapper">
+                    <textarea id="comments" name="comments" rows="4"
+                        placeholder="Adoraríamos ouvir seus elogios, sugestões ou o que podemos melhorar..."></textarea>
+                </div>
+            </section>
+
+            <button type="submit" class="submit-btn">Enviar Avaliação</button>
+        </form>
+
+        <footer class="footer">
+            <div class="contact-info">
+                <p><i class="fas fa-globe"></i> <a href="https://hotelsolar.tur.br"
+                        target="_blank">hotelsolar.tur.br</a></p>
+                <p><i class="fab fa-whatsapp"></i> <a href="https://wa.me/5591981000800" target="_blank">(91)
+                        98100-0800</a></p>
+                <p><i class="fas fa-envelope"></i> <a
+                        href="mailto:reserva@hotelsolar.tur.br">reserva@hotelsolar.tur.br</a></p>
+            </div>
+            <p class="copyright">&copy; 2026 Hotel Solar. Todos os direitos reservados.</p>
+        </footer>
+    </div>
+
+    <!-- Modal de Sucesso -->
+    <div id="successModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h2>Obrigado!</h2>
+            <p>Sua avaliação foi enviada com sucesso. Agradecemos seu feedback!</p>
+            <button id="closeModalBtn" class="primary-btn">Fechar</button>
+        </div>
+    </div>
+
+    <!-- Success Modal: Promoter (High Rating) -->
+    <div id="successModalPromoter" class="modal-overlay">
+        <div class="modal-content success-modal">
+            <div class="success-icon">🎉</div>
+            <h2>Uau! Ficamos muito felizes!</h2>
+            <p>Sua experiência foi incrível e isso alegra nosso dia! 🌟</p>
+            <p>Poderia nos ajudar rapidinho avaliando também no Google? Leva 10 segundos e ajuda muito nossa equipe!</p>
+
+            <a href="https://maps.app.goo.gl/8Ub9gxEhnzwdYN5N6" target="_blank" class="google-btn">
+                <i class="fab fa-google"></i> AVALIAR NO GOOGLE
+            </a>
+
+            <button onclick="closeModalAndReload()" class="secondary-btn">Voltar ao Início</button>
+        </div>
+    </div>
+
+    <!-- Success Modal: Neutral/Detractor (Low Rating) -->
+    <div id="successModalNeutral" class="modal-overlay">
+        <div class="modal-content success-modal">
+            <div class="success-icon">🙏</div>
+            <h2>Obrigado pelo Feedback</h2>
+            <p>Agradecemos sua sinceridade. Suas observações foram enviadas diretamente à gerência para melhorarmos
+                nossos serviços.</p>
+            <p>Esperamos surpreendê-lo positivamente em sua próxima visita.</p>
+
+            <button onclick="closeModalAndReload()" class="primary-btn">Voltar ao Início</button>
+        </div>
+    </div>
+
+    <style>
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            backdrop-filter: blur(5px);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .success-modal {
+            text-align: center;
+            max-width: 400px;
+            padding: 3rem 2rem;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        .success-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            animation: bounce 1s infinite;
+        }
+
+        .success-modal h2 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-size: 1.8rem;
+        }
+
+        .success-modal p {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+            font-size: 1.05rem;
+        }
+
+        .google-btn {
+            display: inline-block;
+            background: #4285F4;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(66, 133, 244, 0.4);
+            transition: transform 0.2s;
+            width: 100%;
+        }
+
+        .google-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(66, 133, 244, 0.5);
+        }
+
+        .secondary-btn {
+            background: transparent;
+            color: var(--text-secondary);
+            border: none;
+            cursor: pointer;
+            text-decoration: underline;
+            font-size: 0.9rem;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
